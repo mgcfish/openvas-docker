@@ -7,7 +7,6 @@ MAINTAINER Mike Splain mike.splain@gmail.com
 ENV OPENVAS_ADMIN_USER     admin
 ENV OPENVAS_ADMIN_PASSWORD openvas
 
-ADD bin/* /openvas/
 ADD config/redis.config /etc/redis/redis.config
 
 RUN apt-get update && \
@@ -29,6 +28,7 @@ RUN apt-get update && \
                     libuuid1 \
                     uuid-dev \
                     sqlfairy \
+                    smbclient \
                     xmltoman \
                     sqlite3 \
                     libsqlite3-dev \
@@ -169,12 +169,6 @@ RUN apt-get update && \
         ./configure && \
         make && \
         make install && \
-    cd / && \
-    cd /tmp && \
-    wget https://github.com/Arachni/arachni/releases/download/v1.2.1/arachni-1.2.1-0.5.7.1-linux-x86_64.tar.gz && \
-        tar -zxvf arachni-1.2.1-0.5.7.1-linux-x86_64.tar.gz && \
-        mv arachni-1.2.1-0.5.7.1 /opt/arachni && \
-        ln -s /opt/arachni/bin/* /usr/local/bin/ && \
     cd ~ && \
     wget https://github.com/sullo/nikto/archive/master.zip && \
     unzip master.zip -d /tmp && \
@@ -189,10 +183,18 @@ RUN apt-get update && \
     apt-get clean -yq && \
     apt-get autoremove -yq && \
     apt-get purge -y --auto-remove build-essential cmake && \
-    rm -rf /var/lib/apt/lists/* && \
-    /openvas/setup.sh
+    rm -rf /var/lib/apt/lists/*
 
-CMD /openvas/start.sh
+
+# Copy files just in time to speed-up build process
+COPY bin/sync.sh /sync.sh
+RUN /sync.sh
+COPY bin/setup.sh /setup.sh
+RUN /setup.sh
+
+COPY bin/start.sh /start.sh
+COPY bin/quickstart.sh /quickstart.sh
+CMD /quickstart.sh
 
 # Expose UI
 EXPOSE 443 9390 9391 9392
