@@ -2,12 +2,13 @@
 # Based on: http://hackertarget.com/install-openvas-7-ubuntu/
 
 FROM ubuntu:14.04
-MAINTAINER Mike Splain mike.splain@gmail.com
+MAINTAINER Delve Labs inc. <info@delvelabs.ca>
 
 ENV OPENVAS_ADMIN_USER     admin
 ENV OPENVAS_ADMIN_PASSWORD openvas
 
-ADD config/redis.config /etc/redis/redis.config
+ENV TERM linux
+
 
 RUN apt-get update && \
     apt-get install build-essential \
@@ -19,12 +20,12 @@ RUN apt-get update && \
                     nsis \
                     pkg-config \
                     libglib2.0-dev \
-                    libgnutls-dev \
+                    libssl-dev \
+                    #libgcrypt20-dev \
                     libpcap0.8-dev \
                     libgpgme11 \
                     libgpgme11-dev \
                     openssh-client \
-                    doxygen \
                     libuuid1 \
                     uuid-dev \
                     sqlfairy \
@@ -37,34 +38,53 @@ RUN apt-get update && \
                     libxslt1.1 \
                     libxslt1-dev \
                     libhiredis-dev \
-                    heimdal-dev \
+                    redis-server \
+                    #heimdal-dev \
                     libssh-dev \
                     libpopt-dev \
                     mingw32 \
                     xsltproc \
                     libmicrohttpd-dev \
-                    wget \
                     rsync \
                     texlive-latex-base \
                     texlive-latex-recommended \
                     texlive-latex-extra \
                     unzip \
                     wapiti \
+                    wget \
                     nmap \
                     python \
                     python-pip \
                     python-setuptools \
                     python-paramiko \
-                    -y --no-install-recommends && \
-    mkdir /openvas-src && \
+                    curl \
+                    libcurl4-openssl-dev \
+                    libkrb5-dev \
+                    -y --no-install-recommends
+
+RUN mkdir /openvas-src && \ 
     cd /openvas-src && \
-        wget http://wald.intevation.org/frs/download.php/2191/openvas-libraries-8.0.5.tar.gz -O openvas-libraries.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2129/openvas-scanner-5.0.4.tar.gz -O openvas-scanner.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2195/openvas-manager-6.0.6.tar.gz -O openvas-manager.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2200/greenbone-security-assistant-6.0.6.tar.gz -O greenbone-security-assistant.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2191/openvas-libraries-8.0.6.tar.gz -O openvas-libraries.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2129/openvas-scanner-5.0.5.tar.gz -O openvas-scanner.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2195/openvas-manager-6.0.7.tar.gz -O openvas-manager.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2200/greenbone-security-assistant-6.0.8.tar.gz -O greenbone-security-assistant.tar.gz && \
         wget http://wald.intevation.org/frs/download.php/2209/openvas-cli-1.4.3.tar.gz -O openvas-cli.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/1975/openvas-smb-1.0.1.tar.gz -O openvas-smb.tar.gz && \
-    cd /openvas-src/ && \
+        wget http://wald.intevation.org/frs/download.php/1975/openvas-smb-1.0.1.tar.gz -O openvas-smb.tar.gz 
+
+RUN mkdir /osp && \
+    cd /osp && \
+        wget http://wald.intevation.org/frs/download.php/1999/ospd-1.0.0.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2145/ospd-1.0.1.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2177/ospd-1.0.2.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2005/ospd-ancor-1.0.0.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2097/ospd-debsecan-1.0.0.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2003/ospd-ovaldi-1.0.0.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2149/ospd-paloalto-1.0b1.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2004/ospd-w3af-1.0.0.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2181/ospd-acunetix-1.0b1.tar.gz
+
+  
+RUN cd /openvas-src/ && \
         tar zxvf openvas-libraries.tar.gz && \
         tar zxvf openvas-scanner.tar.gz && \
         tar zxvf openvas-manager.tar.gz && \
@@ -101,17 +121,8 @@ RUN apt-get update && \
         cmake .. && \
         make && \
         make install && \
-    mkdir /osp && \
-    cd /osp &&\
-        wget http://wald.intevation.org/frs/download.php/1999/ospd-1.0.0.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2145/ospd-1.0.1.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2177/ospd-1.0.2.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2005/ospd-ancor-1.0.0.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2097/ospd-debsecan-1.0.0.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2003/ospd-ovaldi-1.0.0.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2149/ospd-paloalto-1.0b1.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2004/ospd-w3af-1.0.0.tar.gz && \
-        wget http://wald.intevation.org/frs/download.php/2181/ospd-acunetix-1.0b1.tar.gz && \
+    apt-get install heimdal-dev -y --no-install-recommends && \
+    cd /osp && \
         tar zxvf ospd-1.0.0.tar.gz && \
         tar zxvf ospd-1.0.1.tar.gz && \
         tar zxvf ospd-1.0.2.tar.gz && \
@@ -141,18 +152,7 @@ RUN apt-get update && \
         python setup.py install && \
     cd /osp/ospd-1.0.2 && \
         python setup.py install && \
-    mkdir /redis && \
-        cd /redis && \
-        wget http://download.redis.io/releases/redis-3.0.5.tar.gz  && \
-            tar zxvf redis-3.0.5.tar.gz && \
-            cd redis-3.0.5 && \
-            make -j $(nproc)&& \
-            make install && \
-            rm -fr /redis && \
     apt-get remove heimdal-dev -y && \
-    apt-get install curl \
-            libcurl4-gnutls-dev \
-            libkrb5-dev -y && \
     cd /openvas-src/openvas-smb-* && \
         mkdir source && \
         cd source && \
@@ -160,15 +160,15 @@ RUN apt-get update && \
         make && \
         make install && \
     rm -rf /openvas-src && \
-    mkdir /dirb && \
-    cd /dirb && \
-    wget http://downloads.sourceforge.net/project/dirb/dirb/2.22/dirb222.tar.gz && \
-        tar -zxvf dirb222.tar.gz && \
-        cd dirb222 && \
-        chmod 700 -R * && \
-        ./configure && \
-        make && \
-        make install && \
+    #mkdir /dirb && \
+    #cd /dirb && \
+    #wget http://downloads.sourceforge.net/project/dirb/dirb/2.22/dirb222.tar.gz && \
+    #    tar -zxvf dirb222.tar.gz && \
+    #    cd dirb222 && \
+    #    chmod 700 -R * && \
+    #    ./configure && \
+    #    make && \
+    #    make install && \
     cd ~ && \
     wget https://github.com/sullo/nikto/archive/master.zip && \
     unzip master.zip -d /tmp && \
@@ -185,6 +185,8 @@ RUN apt-get update && \
     apt-get purge -y --auto-remove build-essential cmake && \
     rm -rf /var/lib/apt/lists/*
 
+# Copy redis config
+ADD config/redis.config /etc/redis/redis.config
 
 # Copy files just in time to speed-up build process
 COPY bin/sync.sh /sync.sh
