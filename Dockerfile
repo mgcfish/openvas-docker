@@ -11,6 +11,7 @@ ENV TERM linux
 
 RUN apt-get update && \
     apt-get install build-essential \
+                    net-tools \
                     bison \
                     flex \
                     cmake \
