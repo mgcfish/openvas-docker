@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Starting Redis"
-/usr/local/bin/redis-server /etc/redis/redis.config
+/usr/bin/redis-server /etc/redis/redis.config
 
 echo "Starting Openvas..."
 

@@ -9,17 +9,8 @@ do
     sleep 5
 done
 
-echo "Starting openvasmd"
-#openvasmd
-#openvasmd --update
 echo "Rebuilding Openvasmd..."
-  
 timeout 1h openvasmd --rebuild --progress -v || exit # This is critical, build needs to restart
-
-echo "Cleaning up"
-#ps aux | grep openvassd| awk '{print $2}' |xargs kill -9
-#ps aux | grep openvasmd| awk '{print $2}' |xargs kill -9
-#openvassd
 
 echo "Creating Admin user..."
 openvasmd --create-user=${OPENVAS_ADMIN_USER} --role=Admin

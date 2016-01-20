@@ -1,14 +1,13 @@
 # OpenVAS
 # Based on: http://hackertarget.com/install-openvas-7-ubuntu/
 
-FROM ubuntu:14.04
+FROM ubuntu:15.04
 MAINTAINER Delve Labs inc. <info@delvelabs.ca>
 
 ENV OPENVAS_ADMIN_USER     admin
 ENV OPENVAS_ADMIN_PASSWORD openvas
 
 ENV TERM linux
-
 
 RUN apt-get update && \
     apt-get install build-essential \
@@ -20,8 +19,8 @@ RUN apt-get update && \
                     nsis \
                     pkg-config \
                     libglib2.0-dev \
-                    libssl-dev \
-                    #libgcrypt20-dev \
+                    libgnutls-dev \
+                    libgcrypt11-dev \
                     libpcap0.8-dev \
                     libgpgme11 \
                     libgpgme11-dev \
@@ -39,10 +38,9 @@ RUN apt-get update && \
                     libxslt1-dev \
                     libhiredis-dev \
                     redis-server \
-                    #heimdal-dev \
                     libssh-dev \
                     libpopt-dev \
-                    mingw32 \
+                    mingw-w64 \
                     xsltproc \
                     libmicrohttpd-dev \
                     rsync \
@@ -58,7 +56,7 @@ RUN apt-get update && \
                     python-setuptools \
                     python-paramiko \
                     curl \
-                    libcurl4-openssl-dev \
+                    libcurl4-gnutls-dev \
                     libkrb5-dev \
                     -y --no-install-recommends
 
@@ -90,39 +88,47 @@ RUN cd /openvas-src/ && \
         tar zxvf openvas-manager.tar.gz && \
         tar zxvf greenbone-security-assistant.tar.gz && \
         tar zxvf openvas-cli.tar.gz && \
-        tar zxvf openvas-smb.tar.gz && \
-    cd /openvas-src/openvas-libraries-* && \
+        tar zxvf openvas-smb.tar.gz 
+
+RUN    cd /openvas-src/openvas-libraries-* && \
         mkdir source && \
         cd source && \
         cmake .. && \
         make && \
-        make install && \
-    cd /openvas-src/openvas-scanner-* && \
+        make install 
+
+RUN    cd /openvas-src/openvas-scanner-* && \
         mkdir source && \
         cd source && \
         cmake .. && \
         make && \
-        make install && \
-    cd /openvas-src/openvas-manager-* && \
+        make install 
+
+RUN    cd /openvas-src/openvas-manager-* && \
         mkdir source && \
         cd source && \
         cmake .. && \
         make && \
-        make install && \
-    cd /openvas-src/greenbone-security-assistant-* && \
+        make install
+
+RUN    cd /openvas-src/greenbone-security-assistant-* && \
         mkdir source && \
         cd source && \
         cmake .. && \
         make && \
-        make install && \
-    cd /openvas-src/openvas-cli-* && \
+        make install
+ 
+RUN    cd /openvas-src/openvas-cli-* && \
         mkdir source && \
         cd source && \
         cmake .. && \
         make && \
-        make install && \
-    apt-get install heimdal-dev -y --no-install-recommends && \
-    cd /osp && \
+        make install
+
+# Dependency problem workaround
+RUN    apt-get install heimdal-dev -y --no-install-recommends 
+
+RUN    cd /osp && \
         tar zxvf ospd-1.0.0.tar.gz && \
         tar zxvf ospd-1.0.1.tar.gz && \
         tar zxvf ospd-1.0.2.tar.gz && \
@@ -151,24 +157,27 @@ RUN cd /openvas-src/ && \
     cd /osp/ospd-acunetix-1.0b1 && \
         python setup.py install && \
     cd /osp/ospd-1.0.2 && \
-        python setup.py install && \
-    apt-get remove heimdal-dev -y && \
-    cd /openvas-src/openvas-smb-* && \
+        python setup.py install 
+
+# Dependency workaround
+RUN    apt-get remove heimdal-dev -y
+
+RUN    cd /openvas-src/openvas-smb-* && \
         mkdir source && \
         cd source && \
         cmake .. && \
         make && \
         make install && \
     rm -rf /openvas-src && \
-    #mkdir /dirb && \
-    #cd /dirb && \
-    #wget http://downloads.sourceforge.net/project/dirb/dirb/2.22/dirb222.tar.gz && \
-    #    tar -zxvf dirb222.tar.gz && \
-    #    cd dirb222 && \
-    #    chmod 700 -R * && \
-    #    ./configure && \
-    #    make && \
-    #    make install && \
+    mkdir /dirb && \
+    cd /dirb && \
+    wget http://downloads.sourceforge.net/project/dirb/dirb/2.22/dirb222.tar.gz && \
+        tar -zxvf dirb222.tar.gz && \
+        cd dirb222 && \
+        chmod 700 -R * && \
+        ./configure && \
+        make && \
+        make install && \
     cd ~ && \
     wget https://github.com/sullo/nikto/archive/master.zip && \
     unzip master.zip -d /tmp && \
