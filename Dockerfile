@@ -62,6 +62,9 @@ RUN apt-get update && \
                     curl \
                     libcurl4-gnutls-dev \
                     libkrb5-dev \
+                    ike-scan \
+                    snmp \
+                    ldap-utils \
                     -y --no-install-recommends
 
 RUN mkdir /openvas-src && \ 
