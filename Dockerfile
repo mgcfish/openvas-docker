@@ -12,6 +12,7 @@ ENV TERM linux
 RUN apt-get update && \
     apt-get install build-essential \
                     net-tools \
+                    iputils-ping \
                     bison \
                     flex \
                     cmake \
