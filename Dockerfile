@@ -87,6 +87,7 @@ RUN mkdir /osp && \
         wget http://wald.intevation.org/frs/download.php/2097/ospd-debsecan-1.0.0.tar.gz && \
         wget http://wald.intevation.org/frs/download.php/2003/ospd-ovaldi-1.0.0.tar.gz && \
         wget http://wald.intevation.org/frs/download.php/2149/ospd-paloalto-1.0b1.tar.gz && \
+        wget http://wald.intevation.org/frs/download.php/2185/ospd-ikescan-1.0b1.tar.gz && \
         wget http://wald.intevation.org/frs/download.php/2218/ospd-nmap-1.0b1.tar.gz && \
         wget http://wald.intevation.org/frs/download.php/2219/ospd-netstat-1.0b1.tar.gz && \
         wget http://wald.intevation.org/frs/download.php/2213/ospd-ssh-keyscan-1.0b1.tar.gz 
@@ -147,6 +148,7 @@ RUN    cd /osp && \
         tar zxvf ospd-debsecan-1.0.0.tar.gz && \
         tar zxvf ospd-ovaldi-1.0.0.tar.gz && \
         tar zxvf ospd-paloalto-1.0b1.tar.gz && \
+        tar zxvf ospd-ikescan-1.0b1.tar.gz && \
         tar zxvf ospd-nmap-1.0b1.tar.gz && \
         tar zxvf ospd-netstat-1.0b1.tar.gz && \
         tar zxvf ospd-ssh-keyscan-1.0b1.tar.gz && \
@@ -162,6 +164,8 @@ RUN    cd /osp && \
     cd /osp/ospd-1.0.1 && \
         python setup.py install && \
     cd /osp/ospd-paloalto-1.0b1 && \
+        python setup.py install && \
+    cd /osp/ospd-ikescan-1.0b1 && \
         python setup.py install && \
        cd /osp/ospd-1.0.2 && \
         python setup.py install && \ 
@@ -187,24 +191,24 @@ RUN    cd /openvas-src/openvas-smb-* && \
 
 RUN    rm -rf /openvas-src 
 
-RUN    mkdir /dirb && \
-        cd /dirb && \
-        wget http://downloads.sourceforge.net/project/dirb/dirb/2.22/dirb222.tar.gz && \
-        tar -zxvf dirb222.tar.gz && \
-        cd dirb222 && \
-        chmod 700 -R * && \
-        ./configure && \
-        make && \
-        make install
+#RUN    mkdir /dirb && \
+        #cd /dirb && \
+        #wget http://downloads.sourceforge.net/project/dirb/dirb/2.22/dirb222.tar.gz && \
+        #tar -zxvf dirb222.tar.gz && \
+        #cd dirb222 && \
+        #chmod 700 -R * && \
+        #./configure && \
+        #make && \
+        #make install
 
-RUN    cd ~ && \
-        wget https://github.com/sullo/nikto/archive/master.zip && \
-        unzip master.zip -d /tmp && \
-        mv /tmp/nikto-master/program /opt/nikto && \
-        rm -rf /tmp/nikto-master && \
-        echo "EXECDIR=/opt/nikto\nPLUGINDIR=/opt/nikto/plugins\nDBDIR=/opt/nikto/databases\nTEMPLATEDIR=/opt/nikto/templates\nDOCDIR=/opt/nikto/docs" >> /opt/nikto/nikto.conf && \
-        ln -s /opt/nikto/nikto.pl /usr/local/bin/nikto.pl && \
-        ln -s /opt/nikto/nikto.conf /etc/nikto.conf
+#RUN    cd ~ && \
+        #wget https://github.com/sullo/nikto/archive/master.zip && \
+        #unzip master.zip -d /tmp && \
+        #mv /tmp/nikto-master/program /opt/nikto && \
+        #rm -rf /tmp/nikto-master && \
+        #echo "EXECDIR=/opt/nikto\nPLUGINDIR=/opt/nikto/plugins\nDBDIR=/opt/nikto/databases\nTEMPLATEDIR=/opt/nikto/templates\nDOCDIR=/opt/nikto/docs" >> /opt/nikto/nikto.conf && \
+        #ln -s /opt/nikto/nikto.pl /usr/local/bin/nikto.pl && \
+        #ln -s /opt/nikto/nikto.conf /etc/nikto.conf
 
 RUN    mkdir -p /openvas && \
         wget https://svn.wald.intevation.org/svn/openvas/trunk/tools/openvas-check-setup --no-check-certificate -O /openvas/openvas-check-setup && \
